@@ -50,7 +50,7 @@ function hz(kx,ky
 	Deltak=-3/4 *J *de*(cos(kx)-cos(ky))
 	DeltakQ=-3/4 *J *de*(cos(kx+Q)-cos(ky+Q))
 
-  	MM=-4*J*m
+  	MM=-2*J*m
 	h=[ek1 Deltak MM 0 ; Deltak -ek1 0 MM ; MM 0 ekQ DeltakQ ; 0 MM DeltakQ -ekQ]
 
     ek,U=eigen(h) 
