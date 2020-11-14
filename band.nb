@@ -1,0 +1,31 @@
+ClearAll["Global`*"]
+data=Import["C:\\Users\\mkk\\Desktop\\lda.xlsx"];
+dot1={0.000000,0.1279,0.2558,0.4366,0.5850,0.7128,0.8407,1.0216};
+dot={{0,0,0},{Pi,0,0},{Pi,Pi,0},{0,0,0},{0,0,Pi},{Pi,0,Pi},{Pi,Pi,Pi},{0,0,Pi}};
+k=Flatten@data[[1]]-31.25;
+ek=data[[2]];
+lda=Table[Select[MapThread[List,{k,ek[[All,i]]}],(#[[1]]>=0&&#[[1]]<=dot1[[-1]])&],{i,(Dimensions@ek)[[2]]}];
+label=Text[Style[#,18]]&/@{\[CapitalGamma],\[CapitalChi],\[CapitalMu],\[CapitalGamma],\[CapitalZeta],R,\[CapitalAlpha],\[CapitalZeta]};
+ll={628,628,888,628,628,628,888};
+fw={1,Sequence@@Table[Total[ll[[1;;i]]]+1,{i,Length@ll-1}],Total@ll};
+bs=Table[{fw[[i]],label[[i]]},{i,Length@fw}];
+dot={{0,0,0},{Pi,0,0},{Pi,Pi,0},{0,0,0},{0,0,Pi},{Pi,0,Pi},{Pi,Pi,Pi},{0,0,Pi}};
+line=Table[{i,Thin},{i,fw}];
+lk[x_,y_]:=Table[i^2,{i,x-y}]//Total//Sqrt;
+Ldacl=Table[banddot2[#,ll]&/@i,{i,lda}];
+wt=(Cos[kx]-Cos[ky])^2/4;
+nd2band=eb2 + 2* t22x (Cos[kx] +Cos[ky])+4*t22xy*Cos[kx]Cos[ky]+2t22z*Cos[kz]+
+4*t22xz*Cos[kz]*(Cos[kx]+Cos[ky])+2*t22zz*Cos[2*kz];
+nd1band=2*t11x*(Cos[kx]+Cos[ky])+2*t11z*Cos[kz]+eb1;
+niband2=2*t33x(Cos[kx]+Cos[ky])+4*t33xy(Cos[kx]*Cos[ky])+2t33z(Cos[kz])*wt+2t33xx*(Cos[2kx]+Cos[2ky])+eb;
+gl[x_,y_List]:=(x-y[[1]])/(y[[2]]-y[[1]]);
+banddot2[p_,ll_]:=Module[{x=p[[1]],d,a,dd},d=(x-dot1);a=Position[Abs/@(x-dot1),Min[Abs/@d]][[1]][[1]];{If[d[[a]]>=0,1+Total@ll[[1;;a-1]]+(ll[[a]]+1)*gl[x,{dot1[[a]],dot1[[a+1]]}],1+Total@ll[[1;;a-2]]+(ll[[a-1]]+1)*gl[x,{dot1[[a-1]],dot1[[a]]}]],p[[2]]}//Flatten[#,1]&];
+tightband[band_,dot_]:=Module[{n=Length@dot,cl,part,ek,ll},ll=Table[IntegerPart[(lk[dot[[i]],dot[[i+1]]]*200.)],{i,n -1}];cl=Table[Table[Sign[(dot[[i+1]][[dd]]-dot[[i]][[dd]])],{dd,1,3}],{i,1,n-1}];
+
+part=Table[band/.{kx->dot[[j]][[1]]+i*cl[[j]][[1]],ky->dot[[j]][[2]]+i*cl[[j]][[2]],kz->dot[[j]][[3]]+i*cl[[j]][[3]]},{j,1,n-1}];
+ek=Table[Table[part[[j]],{i,0,Pi-Pi/ll[[j]],Pi/ll[[j]]}],{j,1,n-1}]//Flatten];
+parni={44850.530346972606`,{t33x->-0.39890618943779077`,t33xy->0.09166060013468354`,t33z->-0.0930968436456559`,t33xx->-0.037077585640763994`,eb->0.3287590558104783`}};
+parnd1={802.6588312201482`,{t11x->-0.2546586991588384`,t11z->-0.5489982461772386`,eb1->1.713578848036687`}};
+parnd2={3221.072714909161`,{t22x->0.0893117371894791`,t22xy->-0.08931175020621963`,t22z->0.9183681211064015`,t22xz->-0.1435218076083973`,t22zz->-0.33367692278657`,eb2->3.549245334875456`}};
+t1=Show[
+Sequence@@Table[ListLinePlot[i,Frame->{{Automatic,Automatic},{Automatic,Automatic}},FrameTicks->{Automatic,{bs,None}},GridLines->{line,None},PlotRange->{{1,ll//Total},{-2,4}},FrameLabel->{None,Text[Style["ev",18,Gray]]}],{i,Ldacl}],ListPlot[{tightband[nd1band/.parnd1[[2]],dot],tightband[nd2band/.parnd2[[2]],dot],tightband[niband2/.parni[[2]],dot]},Frame->{{Automatic,Automatic},{Automatic,Automatic}},FrameTicks->{Automatic,{bs,None}},GridLines->{line,None},PlotRange->{{1,ll//Total},{-2,4}},PlotStyle->Red]]
